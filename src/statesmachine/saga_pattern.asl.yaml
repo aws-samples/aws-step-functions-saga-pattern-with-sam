@@ -1,0 +1,113 @@
+---
+Comment: A distributed saga example.
+StartAt: BookTrip
+States:
+  BookTrip:
+    Type: Parallel
+    Next: "Validate HTTP Status Code"
+    Branches:
+    - StartAt: BookHotel
+      States:
+        BookHotel:
+          Type: Task
+          Resource: "${BookHotelFunctionArn}"
+          ResultPath: "$.Result"
+          Retry:
+            - ErrorEquals:
+                - States.TaskFailed
+              IntervalSeconds: 2
+              MaxAttempts: 3
+              BackoffRate: 1
+          End: true
+    - StartAt: BookFlight
+      States:
+        BookFlight:
+          Type: Task
+          Resource: "${BookFlightFunctionArn}"
+          ResultPath: "$.Result"
+          Retry:
+            - ErrorEquals:
+                - States.TaskFailed
+              IntervalSeconds: 2
+              MaxAttempts: 3
+              BackoffRate: 1
+          End: true
+    - StartAt: BookCar
+      States:
+        BookCar:
+          Type: Task
+          Resource: "${BookCarFunctionArn}"
+          ResultPath: "$.Result"
+          Retry:
+            - ErrorEquals:
+                - States.TaskFailed
+              IntervalSeconds: 2
+              MaxAttempts: 3
+              BackoffRate: 1
+          End: true
+    Catch:
+    - ErrorEquals:
+      - States.ALL
+      ResultPath: "$.BookTripError"
+      Next: "Trip Booking Failed"
+  "Validate HTTP Status Code":
+    Type: Choice
+    Default: "Trip Booking Successful" 
+    Choices:
+      - Or:
+        - Variable: "$[0].Result.statusCode"
+          NumericGreaterThanEquals: 300
+        - Variable: "$[1].Result.statusCode"
+          NumericGreaterThanEquals: 300
+        - Variable: "$[2].Result.statusCode"
+          NumericGreaterThanEquals: 300
+        Next: "Trip Booking Failed"
+  "Trip Booking Failed":
+    Type: Pass
+    Next: CancelTrip
+  CancelTrip:
+    Type: Parallel
+    Next: "Trip Booking Cancelled"
+    Branches:
+    - StartAt: CancelHotel
+      States:
+        CancelHotel:
+          Type: Task
+          Resource: "${CancelHotelFunctionArn}"
+          Retry:
+            - ErrorEquals:
+                - States.TaskFailed
+              IntervalSeconds: 2
+              MaxAttempts: 3
+              BackoffRate: 1
+          End: true
+    - StartAt: CancelFlight
+      States:
+        CancelFlight:
+          Type: Task
+          Resource: "${CancelFlightFunctionArn}"
+          Retry:
+            - ErrorEquals:
+                - States.TaskFailed
+              IntervalSeconds: 2
+              MaxAttempts: 3
+              BackoffRate: 1
+          End: true
+    - StartAt: CancelCar
+      States:
+        CancelCar:
+          Type: Task
+          Resource: "${CancelCarFunctionArn}"
+          Retry:
+            - ErrorEquals:
+                - States.TaskFailed
+              IntervalSeconds: 2
+              MaxAttempts: 3
+              BackoffRate: 1
+          End: true
+  "Trip Booking Successful":
+    Type: Succeed
+  "Trip Booking Cancelled":
+    Type: Fail
+    Cause: Trip cancelled due to error.
+    Error: TripCancelledError

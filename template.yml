@@ -1,0 +1,214 @@
+# This is the SAM template that represents the architecture of your serverless application
+# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-template-basics.html
+
+# The AWSTemplateFormatVersion identifies the capabilities of the template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  saga-pattern-lab 
+
+Parameters:
+ stateManicheName:
+   Description: State Machine Mane
+   Type: String
+   Default: BookingStateMachine
+
+# Transform section specifies one or more macros that AWS CloudFormation uses to process your template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
+Transform:
+- AWS::Serverless-2016-10-31
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Tracing: Active
+    Handler: app.lambdaHandler
+    Runtime: nodejs14.x
+    MemorySize: 128
+    Timeout: 200
+
+# Resources declares the AWS resources that you want to include in the stack
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
+Resources:
+  
+  LambdaFunctionRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+          Path: "/"
+          ManagedPolicyArns:
+              - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              - "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+              - "arn:aws:iam::aws:policy/AWSStepFunctionsReadOnlyAccess"
+          Policies:
+            - PolicyName: DemoLambdaRuntime
+              PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                  - Effect: Allow
+                    Action: 
+                      - dynamodb:GetItem
+                      - dynamodb:PutItem
+                    Resource: [
+                      !GetAtt carBookingsTable.Arn,
+                      !GetAtt flightBookingsTable.Arn,
+                      !GetAtt hotelBookingsTable.Arn
+                    ]   
+          AssumeRolePolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Sid: "AllowLambdaServiceToAssumeRole"
+                Effect: "Allow"
+                Action:
+                  - "sts:AssumeRole"
+                Principal:
+                  Service:
+                    - "lambda.amazonaws.com"
+
+# More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html  
+# Booking Functions
+  BookCarFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Role: !GetAtt LambdaFunctionRole.Arn
+      CodeUri: src/functions/BookCar/
+      Environment:
+        Variables:
+          CAR_BOOKINGS_TABLE_NAME: !Ref carBookingsTable
+
+  BookFlightFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Role: !GetAtt LambdaFunctionRole.Arn
+      CodeUri: src/functions/BookFlight/
+      Environment:
+        Variables:
+          FLIGHT_BOOKINGS_TABLE_NAME: !Ref flightBookingsTable
+
+  BookHotelFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Role: !GetAtt LambdaFunctionRole.Arn
+      CodeUri: src/functions/BookHotel/
+      Environment:
+        Variables:
+          HOTEL_BOOKINGS_TABLE_NAME: !Ref hotelBookingsTable
+
+  # Cancel Booking Functions
+  CancelCarFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Role: !GetAtt LambdaFunctionRole.Arn
+      CodeUri: src/functions/CancelCar/
+      Environment:
+        Variables:
+          CAR_BOOKINGS_TABLE_NAME: !Ref carBookingsTable
+
+  CancelFlightFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Role: !GetAtt LambdaFunctionRole.Arn
+      CodeUri: src/functions/CancelFlight/
+      Environment:
+        Variables:
+          FLIGHT_BOOKINGS_TABLE_NAME: !Ref flightBookingsTable
+
+  CancelHotelFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Role: !GetAtt LambdaFunctionRole.Arn
+      CodeUri: src/functions/CancelHotel/
+      Environment:
+        Variables:
+          HOTEL_BOOKINGS_TABLE_NAME: !Ref hotelBookingsTable
+  
+  StatusCheckFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Role: !GetAtt LambdaFunctionRole.Arn
+      CodeUri: src/functions/StatusCheck/
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /Status
+            Method: POST
+
+  # State Machine
+  BookingStateMachine:
+    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html 
+    Properties:
+      Name: !Ref stateManicheName
+      DefinitionUri: src/statesmachine/saga_pattern.asl.yaml
+      Tracing:
+        Enabled: true
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /
+            Method: POST
+      DefinitionSubstitutions:
+        BookCarFunctionArn: !GetAtt BookCarFunction.Arn
+        BookFlightFunctionArn: !GetAtt BookFlightFunction.Arn
+        BookHotelFunctionArn: !GetAtt BookHotelFunction.Arn
+        CancelCarFunctionArn: !GetAtt CancelCarFunction.Arn
+        CancelFlightFunctionArn: !GetAtt CancelFlightFunction.Arn
+        CancelHotelFunctionArn: !GetAtt CancelHotelFunction.Arn
+
+      Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - LambdaInvokePolicy:
+            FunctionName: !Ref BookCarFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref BookFlightFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref BookHotelFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CancelCarFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CancelFlightFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CancelHotelFunction
+
+  hotelBookingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: tripId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: tripId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  carBookingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: tripId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: tripId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  flightBookingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: tripId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: tripId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

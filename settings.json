@@ -1,0 +1,25 @@
+{
+  "yaml.customTags": [
+    "!Equals sequence",
+    "!FindInMap sequence",
+    "!GetAtt",
+    "!GetAZs",
+    "!ImportValue",
+    "!Join sequence",
+    "!Ref",
+    "!Select sequence",
+    "!Split sequence",
+    "!Sub"
+  ],
+  "json.schemas": [{
+    "fileMatch": [
+      "*.sam.yml"
+    ],
+    "url": "https://raw.githubusercontent.com/awslabs/goformation/v4.19.1/schema/sam.schema.json" //https://www.schemastore.org/json/
+  }, ],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+}
