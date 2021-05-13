@@ -2,7 +2,9 @@
 
 ## Summary
 
-[TODO]
+The Saga Pattern was published in [1987 by Hector Garcia-Molina and Kennet Salem from Princeton University](https://www.cs.princeton.edu/research/techreps/TR-070-87). It's a design pattern that helps establish data consistency in distributed applications like Microservices. It coordinates transactions between multiple Microservices to ensure that the data will remain consistent depending on the success or failure of the Business Process transaction.
+
+This repo conten code that back the blog post that shows how to integrate Microservices using Saga Pattern and [AWS Step Functions](https://aws.amazon.com/step-functions). AWS Step Functions is a serverless function orchestrator that makes it easy to sequence AWS Lambda functions and multiple AWS services into business-critical applications.
 
 ## Tools
 
@@ -14,13 +16,9 @@
 
   [Jq](https://stedolan.github.io/jq/)
 
-## Step Functions saga pattern
+## Trip Booking Saga pattern
 
-Implementation of the Saga pattern for Lambda functions using Step Functions.
-
-Each request has a compensating request for rollback.
-
-The Saga goes like this:
+Each request has a compensating request for rollback. The Saga goes like this:
 
 ```txt
   Begin saga
@@ -75,7 +73,7 @@ Build lambda function, and prepare them for subsequent steps in the workflow
     }
     ```
 
-    To test this Payload, execute the follow CRUL commands to send POST request to the StateMachine via API Gateway.
+    To test this Payload, execute the follow CURL commands to send POST request to the StateMachine via API Gateway.
 
     __Note:__ Make sure you have replaced the XXXXXX from <https://XXXXXXX.execute-api.us-west-2.amazonaws.com/Prod/>  with the unique id generated during your SAM deployment
 
@@ -133,7 +131,7 @@ Build lambda function, and prepare them for subsequent steps in the workflow
     curl -X POST -H 'Content-Type: application/json' $API_GW_URL/Status -d "{ \"executionArn\": $executionArnPayload }" | jq .
     ```
 
-[Click here --> https://us-west-2.console.aws.amazon.com/states/home?region=us-west-2#/statemachines](https://us-west-2.console.aws.amazon.com/states/home?region=us-west-2#/statemachines) to explore the State Machine execution from AWS Console, where you can find more details about your Stepfunction execution. Note: make sure you select the same region where you're working in my case is **us-west-2**.
+[Click here --> https://us-west-2.console.aws.amazon.com/states/home?region=us-west-2#/statemachines](https://us-west-2.console.aws.amazon.com/states/home?region=us-west-2#/statemachines) to explore the State Machine execution from AWS Console, where you can find more details about your Stepfunction execution. Note: make sure you select the same region where you're working on, mine is **us-west-2**.
 
 ## Cleanup
 
@@ -142,3 +140,13 @@ To clean up the resources deployed by SAM project you can use AWS CloudFormation
   ```bash
     aws cloudformation delete-stack --stack-name demo-saga-pattern-stepfunctions
   ```
+
+
+## Security
+
+See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+
+## License
+
+This library is licensed under the MIT-0 License. See the LICENSE file.
+
