@@ -33,6 +33,32 @@ Each request has a compensating request for rollback. The Saga goes like this:
 
 ### Deployment & Test
 
+#### Unit test
+
+Before you start deploying, you can run unit tests and code coverage locally to test each function.
+
+
+1. Install all dependencies from sub-folders
+
+    Run this command bellow to npm dependencies for each function. Note: if you're a Windows user, you can use [Git Bash](https://git-scm.com/downloads)
+
+    ```bash
+    find . -name node_modules -prune -o -name package.json -execdir npm install \;
+    ```
+1. Run Unit Test & Code Coverage
+
+    This project uses Jest for Unit Test implementation
+
+    ```bash
+    npm run test
+    ```
+    After running this command, you should get a result like an image below: 
+    ![Image of Successful Saga](docs/unit_test_result.png)
+
+   And to explore the Code Coverage, open the file generated at **/coverage/lcov-report/index.html** in your browser, and you should see a screen like the one bellow
+
+    ![Image of Successful Saga](docs/code_coverage_result.png)
+
 #### Steps to deploy
 
 Build lambda function, and prepare them for subsequent steps in the workflow
