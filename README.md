@@ -1,10 +1,16 @@
-# saga-pattern-lab
+# Saga Patern with AWS Step Functions in a SAM Project
+
+## Summary
+
+[TODO]
 
 ## Tools
 
   [AWS CLI](https://aws.amazon.com/cli/)
 
   [AWS SAM](https://aws.amazon.com/serverless/sam/)
+
+  [NodeJs](https://nodejs.org/)
 
   [Jq](https://stedolan.github.io/jq/)
 
@@ -114,7 +120,7 @@ Build lambda function, and prepare them for subsequent steps in the workflow
 
     ```
 
-    To test this Payload, execute the follow CRUL commands to send POST request to the StateMachine via API Gateway.
+    To test this Payload, execute the follow CURL commands to send POST request to the StateMachine via API Gateway.
 
     ```bash
     FAILURE_JSON_PAYLOAD='{"tripId":"1ecb46a4-ce47-4e13-b19e-64c2d057bed1","depart":"London","departAt":"2021-07-10T06:00:00.000Z","arrive":"Dublin",    "arriveAt":"2021-07-12T08:00:00.000Z","hotel":"holiday inn","checkIn":"2021-07-10T12:00:00.000Z","checkOut":"2021-07-12T14:00:00.000Z", "car":"Volvo", "carFrom":"2021-07-10T00:00:00.000Z","carTo":"2021-07-12T00:00:00.000Z","failBookFlight":true}' \
@@ -126,3 +132,13 @@ Build lambda function, and prepare them for subsequent steps in the workflow
     ```bash
     curl -X POST -H 'Content-Type: application/json' $API_GW_URL/Status -d "{ \"executionArn\": $executionArnPayload }" | jq .
     ```
+
+[Click here --> https://us-west-2.console.aws.amazon.com/states/home?region=us-west-2#/statemachines](https://us-west-2.console.aws.amazon.com/states/home?region=us-west-2#/statemachines) to explore the State Machine execution from AWS Console, where you can find more details about your Stepfunction execution. Note: make sure you select the same region where you're working in my case is **us-west-2**.
+
+## Cleanup
+
+To clean up the resources deployed by SAM project you can use AWS CloudFormation passing your SAM project name correspondent with stack-name from CloudFormation
+
+  ```bash
+    aws cloudformation delete-stack --stack-name demo-saga-pattern-stepfunctions
+  ```
