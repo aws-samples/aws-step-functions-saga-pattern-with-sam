@@ -1,4 +1,4 @@
-# Saga Patern with AWS Step Functions in a SAM Project
+# Saga Pattern with AWS Step Functions in a SAM Project
 
 ## Summary
 
