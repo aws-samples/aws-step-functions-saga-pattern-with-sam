@@ -47,7 +47,7 @@ Before you start deploying, you can run unit tests and code coverage locally to 
     ```
 1. Run Unit Test & Code Coverage
 
-    This project uses Jest for Unit Test implementation
+    This project uses [Jest](https://jestjs.io/) for Unit Test implementation
 
     ```bash
     npm run test
