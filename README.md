@@ -105,7 +105,7 @@ Build lambda function, and prepare them for subsequent steps in the workflow
 
     ```bash
     DEMO_REGION=us-west-2 \
-    API_GW_URL=https://3cjw67q5hh.execute-api.$DEMO_REGION.amazonaws.com/Prod/ \
+    API_GW_URL=https://XXXXXXX.execute-api.$DEMO_REGION.amazonaws.com/Prod/ \
     SUCCESS_JSON_PAYLOAD='{"tripId":"5c12d94a-ee6a-40d9-889b-1d49142248b7","depart":"London","departAt":"2021-07-10T06:00:00.000Z","arrive":"Dublin",   "arriveAt":"2021-07-12T08:00:00.000Z","hotel":"holiday inn","checkIn":"2021-07-10T12:00:00.000Z","checkOut":"2021-07-12T14:00:00.000Z","car":"Volvo",  "carFrom":"2021-07-10T00:00:00.000Z","carTo":"2021-07-12T00:00:00.000Z"}' \
     executionArnPayload=$(curl -X POST -H 'Content-Type: application/json' $API_GW_URL  -d "$SUCCESS_JSON_PAYLOAD" | jq '.executionArn' )
 
