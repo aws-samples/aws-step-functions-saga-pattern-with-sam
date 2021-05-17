@@ -104,7 +104,8 @@ Build lambda function, and prepare them for subsequent steps in the workflow
     __Note:__ Make sure you have replaced the XXXXXX from <https://XXXXXXX.execute-api.us-west-2.amazonaws.com/Prod/>  with the unique id generated during your SAM deployment
 
     ```bash
-    API_GW_URL=https://3cjw67q5hh.execute-api.us-west-2.amazonaws.com/Prod/ \
+    DEMO_REGION=us-west-2 \
+    API_GW_URL=https://XXXXXXX.execute-api.$DEMO_REGION.amazonaws.com/Prod/ \
     SUCCESS_JSON_PAYLOAD='{"tripId":"5c12d94a-ee6a-40d9-889b-1d49142248b7","depart":"London","departAt":"2021-07-10T06:00:00.000Z","arrive":"Dublin",   "arriveAt":"2021-07-12T08:00:00.000Z","hotel":"holiday inn","checkIn":"2021-07-10T12:00:00.000Z","checkOut":"2021-07-12T14:00:00.000Z","car":"Volvo",  "carFrom":"2021-07-10T00:00:00.000Z","carTo":"2021-07-12T00:00:00.000Z"}' \
     executionArnPayload=$(curl -X POST -H 'Content-Type: application/json' $API_GW_URL  -d "$SUCCESS_JSON_PAYLOAD" | jq '.executionArn' )
 
@@ -158,6 +159,23 @@ Build lambda function, and prepare them for subsequent steps in the workflow
     ```
 
 [Click here --> https://us-west-2.console.aws.amazon.com/states/home?region=us-west-2#/statemachines](https://us-west-2.console.aws.amazon.com/states/home?region=us-west-2#/statemachines) to explore the State Machine execution from AWS Console, where you can find more details about your Stepfunction execution. Note: make sure you select the same region where you're working on, mine is **us-west-2**.
+
+#### Observability
+  
+  This project implements Observability using the combination of [AWS CloudWatch](https://aws.amazon.com/cloudwatch/) and [AWS X-Ray](https://aws.amazon.com/xray/) by enabling **Tracing** to all lambda functions in [Globals Section](https://github.com/aws/serverless-application-model/blob/master/docs/globals.rst) and in the StateMachine definition from the [template.yml](template.yml). With this setting SAM will deploy the resources needed to allows X-Ray to generate an unique trace ID for each request and track its interaction with downstream calls, for more detailed instrumentations each function has implementation to instrument AWS SDK clients to wrap the aws-sdk library with the captureAWS method as the bellow code snippet, [click here to learn more about Instrumenting Node.js code in AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-tracing.html).
+
+  ```js
+  const AWSXRay = require("aws-xray-sdk-core");
+  const AWS = AWSXRay.captureAWS(require("aws-sdk"));
+  const db = new AWS.DynamoDB.DocumentClient();
+  ```
+
+  As a result of this implementation, X-Ray will collect metadata for each request and record a trace with all downstream calls, and it provide dashboard like the images bellow, where it shows all services that your request interact with, a timeline that content a precise length of all calls and a list of CloudWatch logs produced by each functions invoked by this request, this gives you a deep insight about your application in runtime and can help debug, trace, troubleshoot or monitor your workload. Here’s the link <https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#servicelens:traces> where you can find all your requests by Trace ID, open it and scroll down you should find a list that content all your Trace IDs, click in each one to access it dashboard.
+
+  ![Image of X-Ray Trace IDs](docs/XrayTraceIds.png)
+  ![Image of Trace Map](docs/XrayTraceMap.png)
+  ![Image of X-Ray Timeline](docs/XrayTimeline.png)
+  ![Image of Failed Saga](docs/XrayCloudWatchLogs.png)
 
 ## Cleanup
 
