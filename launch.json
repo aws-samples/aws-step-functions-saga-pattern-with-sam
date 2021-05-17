@@ -1,0 +1,69 @@
+{
+    "configurations": [
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "functions:StatusCheck:app.lambdaHandler (nodejs14.x)",
+            "invokeTarget": {
+                "target": "code",
+                "projectRoot": "${workspaceFolder}/src/functions/StatusCheck",
+                "lambdaHandler": "app.lambdaHandler"
+            },
+            "lambda": {
+                "runtime": "nodejs14.x",
+                "payload": {
+                "path": "${workspaceFolder}/events/status-check-payload.json"
+                },
+                "environmentVariables": {}
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "saga-pattern-lab:BookCarFunction",
+            "invokeTarget": {
+                "target": "template",
+                "templatePath": "${workspaceFolder}/template.yml",
+                "logicalId": "BookCarFunction"
+            },
+            "lambda": {
+                "payload": {},
+                "environmentVariables": {}
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "functions:app.lambdaHandler (nodejs14.x)",
+            "invokeTarget": {
+                "target": "code",
+                "projectRoot": "${workspaceFolder}/src/functions/BookHotel",
+                "lambdaHandler": "app.lambdaHandler"
+            },
+            "lambda": {
+                "runtime": "nodejs14.x",
+                "payload": {},
+                "environmentVariables": {}
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "functions:bookCar.app.lambdaHandler (nodejs14.x)",
+            "invokeTarget": {
+                "target": "code",
+                "projectRoot": "${workspaceFolder}/src/functions/BookCar",
+                "lambdaHandler": "app.lambdaHandler"
+            },
+            "lambda": {
+                "runtime": "nodejs14.x",
+                "payload": {
+                    "json": {
+                        "failBookCar": true
+                    }
+                },
+                "environmentVariables": {}
+            }
+        }
+    ]
+}

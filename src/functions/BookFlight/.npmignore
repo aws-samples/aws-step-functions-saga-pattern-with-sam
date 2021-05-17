@@ -1,0 +1,3 @@
+tests/**
+.prettierignore
+__tests__
