@@ -4,7 +4,7 @@
 
 The Saga Pattern was published in [1987 by Hector Garcia-Molina and Kennet Salem from Princeton University](https://www.cs.princeton.edu/research/techreps/TR-070-87). It's a design pattern that helps establish data consistency in distributed applications like Microservices. It coordinates transactions between multiple Microservices to ensure that the data will remain consistent depending on the success or failure of the Business Process transaction.
 
-This repo conten code that back the blog post that shows how to integrate Microservices using Saga Pattern and [AWS Step Functions](https://aws.amazon.com/step-functions). AWS Step Functions is a serverless function orchestrator that makes it easy to sequence AWS Lambda functions and multiple AWS services into business-critical applications.
+This repository contains source code that shows how to Orchestrate Microservices using Saga Pattern with [AWS Step Functions](https://aws.amazon.com/step-functions). AWS Step Functions is a serverless function orchestrator that makes it easy to sequence AWS Lambda functions and multiple AWS services into business-critical applications.
 
 ## Tools
 
