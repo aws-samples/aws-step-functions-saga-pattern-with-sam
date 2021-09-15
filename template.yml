@@ -8,8 +8,8 @@ Description: >-
   saga-pattern-lab 
 
 Parameters:
- stateManicheName:
-   Description: State Machine Mane
+ stateMachineName:
+   Description: State Machine Name
    Type: String
    Default: BookingStateMachine
 
@@ -138,7 +138,7 @@ Resources:
   BookingStateMachine:
     Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html 
     Properties:
-      Name: !Ref stateManicheName
+      Name: !Ref stateMachineName
       DefinitionUri: src/statesmachine/saga_pattern.asl.yaml
       Tracing:
         Enabled: true
