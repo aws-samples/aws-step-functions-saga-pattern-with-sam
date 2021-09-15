@@ -40,7 +40,7 @@ Before you start deploying, you can run unit tests and code coverage locally to 
 
 1. Install all dependencies from sub-folders
 
-    Run this command bellow to npm dependencies for each function. Note: if you're a Windows user, you can use [Git Bash](https://git-scm.com/downloads)
+    Run this command below to npm dependencies for each function. Note: if you're a Windows user, you can use [Git Bash](https://git-scm.com/downloads)
 
     ```bash
     find . -name node_modules -prune -o -name package.json -execdir npm install \;
@@ -99,7 +99,7 @@ Build lambda function, and prepare them for subsequent steps in the workflow
     }
     ```
 
-    To test this Payload, execute the follow CURL commands to send POST request to the StateMachine via API Gateway.
+    To test this Payload, execute the follow CURL commands to send POST request to the State Machine via API Gateway.
 
     __Note:__ Make sure you have replaced the XXXXXX from <https://XXXXXXX.execute-api.us-west-2.amazonaws.com/Prod/>  with the unique id generated during your SAM deployment
 
@@ -111,15 +111,15 @@ Build lambda function, and prepare them for subsequent steps in the workflow
 
     ```
 
-    The commads above sends a **POST** with JSON payload to **$API_GW_URL**, then it queries the API output to filter propriety **.executionArn** and it set this propriety value to local a variable **executionArnPayload**.
+    The commands above sends a **POST** with JSON payload to **$API_GW_URL**, then it queries the API output to filter a proprietary **.executionArn** and it sets this proprietary value locally to a variable **executionArnPayload**.
 
-    Now you check the execution status
+    Now you can check the execution status
 
     ```bash
     curl -X POST -H 'Content-Type: application/json' $API_GW_URL/Status -d "{ \"executionArn\": $executionArnPayload }" | jq .
     ```
 
-    The command above sends a POST with JSON payload that content the executionArn from local variable **$executionArnPayload** and format the output using jq. The output should content the Status of the StateMachine Execution, in this case it should show **"SUCCESS"**
+    The command above sends a POST with JSON payload that contains the executionArn from local variable **$executionArnPayload** and formats the output using jq. The output should contain the Status of the State Machine Execution, in this case it should show **"SUCCESS"**
 
 1. Failure test.
 
@@ -145,7 +145,7 @@ Build lambda function, and prepare them for subsequent steps in the workflow
 
     ```
 
-    To test this Payload, execute the follow CURL commands to send POST request to the StateMachine via API Gateway.
+    To test this Payload, execute the follow CURL commands to send a POST request to the State Machine via API Gateway.
 
     ```bash
     FAILURE_JSON_PAYLOAD='{"tripId":"1ecb46a4-ce47-4e13-b19e-64c2d057bed1","depart":"London","departAt":"2021-07-10T06:00:00.000Z","arrive":"Dublin",    "arriveAt":"2021-07-12T08:00:00.000Z","hotel":"holiday inn","checkIn":"2021-07-10T12:00:00.000Z","checkOut":"2021-07-12T14:00:00.000Z", "car":"Volvo", "carFrom":"2021-07-10T00:00:00.000Z","carTo":"2021-07-12T00:00:00.000Z","failBookFlight":true}' \
