@@ -3,14 +3,14 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
-            "name": "functions:StatusCheck:app.lambdaHandler (nodejs14.x)",
+            "name": "functions:StatusCheck:app.lambdaHandler (nodejs16.x)",
             "invokeTarget": {
                 "target": "code",
                 "projectRoot": "${workspaceFolder}/src/functions/StatusCheck",
                 "lambdaHandler": "app.lambdaHandler"
             },
             "lambda": {
-                "runtime": "nodejs14.x",
+                "runtime": "nodejs16.x",
                 "payload": {
                 "path": "${workspaceFolder}/events/status-check-payload.json"
                 },
@@ -34,14 +34,14 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
-            "name": "functions:app.lambdaHandler (nodejs14.x)",
+            "name": "functions:app.lambdaHandler (nodejs16.x)",
             "invokeTarget": {
                 "target": "code",
                 "projectRoot": "${workspaceFolder}/src/functions/BookHotel",
                 "lambdaHandler": "app.lambdaHandler"
             },
             "lambda": {
-                "runtime": "nodejs14.x",
+                "runtime": "nodejs16.x",
                 "payload": {},
                 "environmentVariables": {}
             }
@@ -49,14 +49,14 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
-            "name": "functions:bookCar.app.lambdaHandler (nodejs14.x)",
+            "name": "functions:bookCar.app.lambdaHandler (nodejs16.x)",
             "invokeTarget": {
                 "target": "code",
                 "projectRoot": "${workspaceFolder}/src/functions/BookCar",
                 "lambdaHandler": "app.lambdaHandler"
             },
             "lambda": {
-                "runtime": "nodejs14.x",
+                "runtime": "nodejs16.x",
                 "payload": {
                     "json": {
                         "failBookCar": true
